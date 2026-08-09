@@ -44,16 +44,33 @@ relying on a filter to exclude private rows.
 ## Contact Form
 
 * The contact form is a public, unauthenticated endpoint and is treated as an
-  abuse surface. Requirements:
-  * Server-side input validation on all fields.
-  * Rate limiting to prevent bulk submission abuse.
-  * Basic bot mitigation (e.g. a honeypot field or equivalent low-friction
-    measure) — full CAPTCHA is avoided if possible, given accessibility concerns
-    with CAPTCHA and this site's accessibility positioning; if a bot-mitigation
-    measure with accessibility implications is ever considered, it is a
-    stop-and-consult design decision, not an implementation-time default.
+  abuse surface. Implemented protections, layered:
+  * Server-side input validation on all fields (name, email format, topic
+    against an allowed list, minimum message length), independent of the
+    client-side validation in the page itself.
+  * A honeypot field (`website`), hidden from sighted and assistive-technology
+    users alike (`aria-hidden`, visually off-screen, not part of the tab
+    order). A populated honeypot is silently rejected without revealing that
+    detection occurred.
+  * Google reCAPTCHA v2 (checkbox variant, not the distorted-text challenge).
+    Chosen over reCAPTCHA v3 specifically because v3's behavioral scoring has
+    a documented history of penalizing atypical interaction patterns,
+    including keyboard-only and screen-reader-driven navigation — a real risk
+    given this site's audience. The checkbox variant can still occasionally
+    escalate to a secondary challenge for sessions Google's own risk engine
+    flags, which is outside this project's control; Google provides an audio
+    alternative for that case. This is a third-party script that sends
+    visitor behavioral data to Google — treated as the explicit third-party
+    tracking decision called for above, not a default.
+  * Rate limiting via a Cloudflare KV-backed counter, keyed by client IP
+    (`src/lib/contact/rateLimit.ts`), capped per time window.
 * Submitted data is not publicly queryable and is not exposed through any public
-  API route.
+  API route. Messages are relayed via the Gmail API (OAuth2, not raw SMTP —
+  Cloudflare Workers does not reliably support raw SMTP), using credentials
+  supplied by the primary contributor, stored as Cloudflare Worker secrets.
+* All four contact-form logic modules (validation, reCAPTCHA verification,
+  rate limiting, Gmail send) are pure/testable and have unit test coverage,
+  per the CI policy in `PROJECT.md`.
 
 ## Third-Party Services
 
@@ -71,6 +88,12 @@ relying on a filter to exclude private rows.
 
 ## Open Items
 
-* Specific email delivery service selection for the contact form (not yet decided).
-* Specific rate-limiting implementation (Cloudflare-native rate limiting vs.
-  application-level) — to be decided when the contact form is designed.
+* The contact form's KV namespace (`RATE_LIMIT`), Gmail API OAuth2
+  credentials, and reCAPTCHA site/secret key pair are not yet provisioned.
+  All three require manual setup outside this repository (Cloudflare KV
+  namespace creation; a Google Cloud project with Gmail API enabled and an
+  OAuth consent flow run once to obtain a refresh token; reCAPTCHA site
+  registration in Google's admin console) before the contact form is
+  functional in production. The code is written against these as named
+  bindings/secrets (see `wrangler.toml`, `src/env.d.ts`) and will fail
+  clearly, not silently, if they are unset.

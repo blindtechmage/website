@@ -15,7 +15,36 @@ const { title } = Astro.props;
   </head>
   <body>
     <a href="#main-content" class="skip-link">Skip to main content</a>
+    <header>
+      <nav aria-label="Main" class="main-nav">
+        <ul>
+          <li><a href="/">Home</a></li>
+          <li><a href="/contact">Contact</a></li>
+        </ul>
+      </nav>
+    </header>
     <slot />
+    <footer class="site-footer">
+      <nav aria-label="Social profiles">
+        <ul>
+          <li>
+            <a href="https://www.linkedin.com/in/JadWauthier" target="_blank" rel="noopener noreferrer"
+              >LinkedIn<span class="visually-hidden"> (opens in a new tab)</span></a
+            >
+          </li>
+          <li>
+            <a href="https://x.com/jtwauthier" target="_blank" rel="noopener noreferrer"
+              >X<span class="visually-hidden"> (opens in a new tab)</span></a
+            >
+          </li>
+          <li>
+            <a href="https://github.com/blindtechmage" target="_blank" rel="noopener noreferrer"
+              >GitHub<span class="visually-hidden"> (opens in a new tab)</span></a
+            >
+          </li>
+        </ul>
+      </nav>
+    </footer>
   </body>
 </html>
 
@@ -31,5 +60,46 @@ const { title } = Astro.props;
     background: #000;
     color: #fff;
     padding: 0.5em 1em;
+  }
+  .main-nav ul {
+    display: flex;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    gap: 0.5rem;
+  }
+  .main-nav a {
+    display: inline-block;
+    min-width: 24px;
+    min-height: 24px;
+    padding: 0.75rem 1rem;
+  }
+  .site-footer {
+    margin-block-start: 3rem;
+    border-top: 1px solid currentColor;
+  }
+  .site-footer ul {
+    display: flex;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    gap: 0.5rem;
+  }
+  .site-footer a {
+    display: inline-block;
+    min-width: 24px;
+    min-height: 24px;
+    padding: 0.75rem 1rem;
+  }
+  .visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
   }
 </style>
