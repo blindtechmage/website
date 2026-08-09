@@ -32,21 +32,21 @@ that no feature bypasses.
 
 ## Specific Requirements Carried From Project Discussion
 
-* No custom-styled interactive control (dropdowns, filter panels, etc.) built as
+- No custom-styled interactive control (dropdowns, filter panels, etc.) built as
   divs pretending to be native form controls. Real semantic elements (`<select>`,
   checkboxes, buttons) are used, styled as needed, rather than reimplemented.
-* Dynamic content updates (e.g. resource search/filter results changing without a
+- Dynamic content updates (e.g. resource search/filter results changing without a
   page reload) are announced to screen reader users via an ARIA live region.
-* Any element that triggers navigation must be a real link (`<a href>`); any
+- Any element that triggers navigation must be a real link (`<a href>`); any
   element that triggers an in-page action must be a real button. Interactive
   elements must not carry mismatched semantics (e.g. a `<button>` used to navigate
   to another page via an `href` attribute, which is invalid and was a defect
   identified in the prior version of this site).
-* Text content must not contain encoding artifacts (mojibake) — verified as part of
+- Text content must not contain encoding artifacts (mojibake) — verified as part of
   normal QA, not just visually but by inspecting rendered text output, since
   visual review alone can miss characters that render acceptably in one font but
   fail elsewhere.
-* No link points to a placeholder destination (`href="#"` with no real target) in
+- No link points to a placeholder destination (`href="#"` with no real target) in
   shipped content.
 
 ## Possible Future Content Element
@@ -58,8 +58,8 @@ content/IA decision, not yet finalized — see `docs/PRD.md`, Open Items.
 
 ## Open Items
 
-* Whether any component will target AAA specifically, and which.
-* Full accessibility test checklist / acceptance-criteria template for feature
+- Whether any component will target AAA specifically, and which.
+- Full accessibility test checklist / acceptance-criteria template for feature
   issues (each feature issue's acceptance criteria should include at least one
   accessibility-focused scenario, per the lightweight issue tracking approach in
   `PROJECT.md`).

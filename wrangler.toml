@@ -1,0 +1,18 @@
+name = "blindtechmage-website"
+compatibility_date = "2026-01-01"
+
+# @astrojs/cloudflare (Workers-targeting, not classic Pages) generates a
+# complete, ready-to-deploy wrangler.json at dist/server/wrangler.json on
+# every build, merging these top-level settings with the correct `main`
+# and `assets` paths for the built output. Do not hand-maintain `main` or
+# `[assets]` here — declaring them at this level causes build-time
+# resolution failures, since they'd need to point at paths that only
+# exist after the build completes.
+#
+# D1 database bindings are added here once the resource-table schema
+# design (docs/PRD.md, Open Items) is finalized. Example shape, not yet active:
+#
+# [[d1_databases]]
+# binding = "DB"
+# database_name = "blindtechmage-resources"
+# database_id = "REPLACE_WITH_REAL_ID"
