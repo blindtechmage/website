@@ -45,9 +45,9 @@ relying on a filter to exclude private rows.
 
 * The contact form is a public, unauthenticated endpoint and is treated as an
   abuse surface. Requirements:
-  - Server-side input validation on all fields.
-  - Rate limiting to prevent bulk submission abuse.
-  - Basic bot mitigation (e.g. a honeypot field or equivalent low-friction
+  * Server-side input validation on all fields.
+  * Rate limiting to prevent bulk submission abuse.
+  * Basic bot mitigation (e.g. a honeypot field or equivalent low-friction
     measure) — full CAPTCHA is avoided if possible, given accessibility concerns
     with CAPTCHA and this site's accessibility positioning; if a bot-mitigation
     measure with accessibility implications is ever considered, it is a
