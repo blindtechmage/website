@@ -13,7 +13,7 @@ team-maintained commercial product.
   Tech-Clusive Solutions, LLC.
 * Primary contributor: Jad Wauthier (the Blind Tech Mage).
 * GitHub account: BlindTechMage.
-* Contact email: info@BlindTechMage.com.
+* Contact email: <info@BlindTechMage.com>.
 * SSH key for GitHub operations: `C:/Users/jwauthier/.ssh/btm_cynthus_ed25519`.
 
 ## Working Agreement
@@ -68,17 +68,21 @@ below) rather than following a full formal field checklist.
   requests. Merge instead requires an explicit verbal "proceed" from the primary
   contributor in conversation, given each time, regardless of CI status.
 * No semantic-versioning or release-branch machinery. This is a live site, not a
-  versioned distributed product. Deploys happen on merge to `main` via Cloudflare
-  Pages' automatic deployment.
+  versioned distributed product. Deploys happen on merge to `main` via a
+  dedicated deploy workflow that runs `wrangler deploy` (see Environmental
+  Conditions — this project deploys to Cloudflare Workers with static assets,
+  not classic Cloudflare Pages, which does not have the same git-integration
+  auto-deploy Pages offered; deploy automation is a separate, not-yet-built CI
+  workflow).
 
 ## CI Policy
 
 * A GitHub Actions workflow runs on every pull request targeting `main`, executing:
-  - Linting for Markdown, JavaScript/TypeScript, and HTML.
-  - Unit tests for all executable/functional code, regardless of language
+  * Linting for Markdown, JavaScript/TypeScript, and HTML.
+  * Unit tests for all executable/functional code, regardless of language
     (TypeScript, Python, or anything else introduced later). Every function or
     module implementing real behavior must have a corresponding unit test that
-    verifies its functionality. This applies to Pages Functions/Worker logic (e.g.
+    verifies its functionality. This applies to Cloudflare Worker route logic (e.g.
     the contact form handler, resource search/filter API) as much as to frontend
     code. A pull request introducing functional code with no corresponding test is
     considered incomplete.
@@ -126,7 +130,7 @@ below) rather than following a full formal field checklist.
 * A linter is configured from the start for each language in use (ESLint for
   TypeScript/JavaScript, markdownlint for Markdown, an HTML linter/validator), run
   locally and enforced in CI.
-* TypeScript is used for all functional/executable code — Pages Functions/Worker
+* TypeScript is used for all functional/executable code — Cloudflare Worker route
   logic, interactive frontend components — not plain JavaScript.
 * Every first-order module/file has exactly one primary responsibility, unless
   additional code is a directly related helper or configuration type.
@@ -146,15 +150,25 @@ below) rather than following a full formal field checklist.
 
 ## Environmental Conditions
 
-* Target platform: Cloudflare Pages (static frontend) plus Cloudflare Pages
-  Functions/Workers (TypeScript) plus D1 (SQLite-compatible database).
+* Target platform: Cloudflare Workers with static assets (via
+  `@astrojs/cloudflare`, which targets Workers rather than classic Cloudflare
+  Pages), plus D1 (SQLite-compatible database). This is a correction from an
+  earlier assumption that the platform would be classic Cloudflare Pages —
+  the Astro adapter's current majors generate a Workers-style deployment
+  (`wrangler.toml` with an `[assets]` binding), not a Pages-style one. The
+  practical effect is the same (Cloudflare-hosted, TypeScript route handlers,
+  D1-backed), but deployment is via `wrangler deploy` in CI rather than Pages'
+  built-in git-integration auto-deploy.
 * Frontend framework: Astro, chosen for its island-based interactivity model, which
   fits a mostly-static site with a small number of interactive pages (resource
-  search/filter).
+  search/filter). The site builds in Astro's `server` output mode (required for
+  Worker route/API handling), with individual static content pages opted into
+  prerendering (`export const prerender = true`) so they build to plain HTML
+  rather than being server-rendered per request.
 * Language: TypeScript for all functional/executable code.
 * No self-managed server, no OS/runtime matrix beyond what Cloudflare's platform
   dictates. The previously used server (`fornax.techclusivesolutions.com`) is
-  retired from serving this site once cutover to Cloudflare Pages is complete.
+  retired from serving this site once cutover to Cloudflare Workers is complete.
 * Credential storage uses Cloudflare's native secrets/bindings mechanism. Never
   plaintext, never committed.
 * Any dependency that is unmaintained, deprecated, or otherwise at risk is flagged
@@ -201,7 +215,9 @@ Plan → Design → Track → Implement → Test process before work begins in t
   blindness-related resources, project details) in D1.
 * Contact form implementation details (delivery mechanism, spam/abuse mitigation).
 * Cloudflare Access configuration for any admin/write-gated routes.
-* DNS cutover from `fornax.techclusivesolutions.com` to Cloudflare Pages — decided
-  in principle, but not yet executed pending a working deployment to point to. This
-  requires explicit confirmation before being carried out, as a live change to a
-  working domain.
+* A deploy workflow (GitHub Actions running `wrangler deploy` on merge to `main`,
+  using a Cloudflare API token stored as a repository secret) — not yet built.
+* DNS cutover from `fornax.techclusivesolutions.com` to the deployed Cloudflare
+  Worker — decided in principle, but not yet executed pending a working deployment
+  to point to. This requires explicit confirmation before being carried out, as a
+  live change to a working domain.

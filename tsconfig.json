@@ -1,0 +1,9 @@
+{
+  "extends": "astro/tsconfigs/strict",
+  "compilerOptions": {
+    "strict": true,
+    "types": ["vitest/globals"]
+  },
+  "include": ["src/**/*", "functions/**/*", "tests/**/*"],
+  "exclude": ["dist", "node_modules"]
+}

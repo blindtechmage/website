@@ -47,12 +47,12 @@ is a separate design decision to be made and confirmed before implementation.
 
 ## Functional Requirements (established so far)
 
-* A contact form, backed by a TypeScript Pages Function.
+* A contact form, backed by a TypeScript Cloudflare Worker route.
 * Domain-specific, searchable/filterable resource tables, stored in Cloudflare D1,
   each in its own table (not a single shared table across domains):
-  - Ham radio resources.
-  - Blindness-related resources.
-  - Project-specific details.
+  * Ham radio resources.
+  * Blindness-related resources.
+  * Project-specific details.
 * Public tables are queryable via a public API route and browsable/searchable on
   corresponding site pages, filterable by fields appropriate to each domain (e.g.
   category, tags via a join table rather than a delimited string column).
