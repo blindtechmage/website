@@ -16,3 +16,19 @@ compatibility_date = "2026-01-01"
 # binding = "DB"
 # database_name = "blindtechmage-resources"
 # database_id = "REPLACE_WITH_REAL_ID"
+
+# Contact form rate limiting. Requires a real KV namespace, created via
+# `wrangler kv namespace create RATE_LIMIT` before this is active — not yet
+# provisioned.
+#
+# [[kv_namespaces]]
+# binding = "RATE_LIMIT"
+# id = "REPLACE_WITH_REAL_ID"
+
+# Contact form secrets (GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET,
+# GOOGLE_REFRESH_TOKEN, GMAIL_SENDER, RECAPTCHA_SECRET) are set via
+# `wrangler secret put <NAME>`, never committed here. See docs/SECURITY.md.
+#
+# The reCAPTCHA site key (PUBLIC_RECAPTCHA_SITE_KEY) is not secret — it is a
+# build-time public environment variable, set via a `.env` file locally
+# (untracked, see .gitignore) or a repository/environment variable in CI.

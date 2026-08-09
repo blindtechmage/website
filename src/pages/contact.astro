@@ -1,0 +1,187 @@
+---
+export const prerender = true;
+
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { CONTACT_TOPICS, MIN_MESSAGE_LENGTH } from '../lib/contact/validation';
+
+const siteKey = import.meta.env.PUBLIC_RECAPTCHA_SITE_KEY ?? '';
+---
+
+<BaseLayout title="Contact — Blind Tech Mage">
+  <script
+    is:inline
+    src="https://www.google.com/recaptcha/api.js"
+    async
+    defer></script>
+  <main id="main-content">
+    <h1>Contact</h1>
+    <p>
+      Use this form to get in touch. Fields marked with an asterisk are
+      required.
+    </p>
+
+    <div id="form-status" role="status" aria-live="polite"></div>
+
+    <form id="contact-form" novalidate>
+      <p class="honeypot-field" aria-hidden="true">
+        <label for="website">Leave this field blank</label>
+        <input type="text" id="website" name="website" tabindex="-1" autocomplete="off" />
+      </p>
+
+      <div class="field">
+        <label for="name">Name *</label>
+        <input type="text" id="name" name="name" required aria-describedby="name-error" />
+        <span id="name-error" class="field-error" role="alert"></span>
+      </div>
+
+      <div class="field">
+        <label for="email">Email *</label>
+        <input type="email" id="email" name="email" required aria-describedby="email-error" />
+        <span id="email-error" class="field-error" role="alert"></span>
+      </div>
+
+      <div class="field">
+        <label for="topic">Topic *</label>
+        <select id="topic" name="topic" required aria-describedby="topic-error">
+          <option value="">Choose a topic</option>
+          {
+            CONTACT_TOPICS.map((topic) => (
+              <option value={topic}>
+                {topic.charAt(0).toUpperCase() + topic.slice(1)}
+              </option>
+            ))
+          }
+        </select>
+        <span id="topic-error" class="field-error" role="alert"></span>
+      </div>
+
+      <div class="field">
+        <label for="message">Message * (minimum {MIN_MESSAGE_LENGTH} characters)</label>
+        <textarea
+          id="message"
+          name="message"
+          required
+          minlength={MIN_MESSAGE_LENGTH}
+          aria-describedby="message-error"
+        ></textarea>
+        <span id="message-error" class="field-error" role="alert"></span>
+      </div>
+
+      <div class="g-recaptcha" data-sitekey={siteKey}></div>
+
+      <button type="submit">Send message</button>
+    </form>
+  </main>
+</BaseLayout>
+
+<script>
+  const MIN_MESSAGE_LENGTH = 20;
+
+  const form = document.getElementById('contact-form') as HTMLFormElement;
+  const status = document.getElementById('form-status') as HTMLElement;
+
+  function setError(fieldId: string, message: string): void {
+    const errorEl = document.getElementById(`${fieldId}-error`);
+    const fieldEl = document.getElementById(fieldId);
+    if (errorEl) errorEl.textContent = message;
+    if (fieldEl) fieldEl.setAttribute('aria-invalid', message ? 'true' : 'false');
+  }
+
+  function validate(data: FormData): { valid: boolean; firstInvalidId?: string } {
+    let valid = true;
+    let firstInvalidId: string | undefined;
+
+    const name = String(data.get('name') ?? '').trim();
+    if (!name) {
+      setError('name', 'Please enter your name.');
+      valid = false;
+      firstInvalidId ??= 'name';
+    } else {
+      setError('name', '');
+    }
+
+    const email = String(data.get('email') ?? '').trim();
+    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!email || !emailPattern.test(email)) {
+      setError('email', 'Please enter a valid email address.');
+      valid = false;
+      firstInvalidId ??= 'email';
+    } else {
+      setError('email', '');
+    }
+
+    const topic = String(data.get('topic') ?? '');
+    if (!topic) {
+      setError('topic', 'Please choose a topic.');
+      valid = false;
+      firstInvalidId ??= 'topic';
+    } else {
+      setError('topic', '');
+    }
+
+    const message = String(data.get('message') ?? '').trim();
+    if (message.length < MIN_MESSAGE_LENGTH) {
+      setError('message', `Please enter at least ${MIN_MESSAGE_LENGTH} characters.`);
+      valid = false;
+      firstInvalidId ??= 'message';
+    } else {
+      setError('message', '');
+    }
+
+    return { valid, firstInvalidId };
+  }
+
+  form.addEventListener('submit', async (event) => {
+    event.preventDefault();
+    const data = new FormData(form);
+    const { valid, firstInvalidId } = validate(data);
+
+    if (!valid) {
+      status.textContent = 'Please correct the highlighted fields.';
+      if (firstInvalidId) {
+        document.getElementById(firstInvalidId)?.focus();
+      }
+      return;
+    }
+
+    status.textContent = 'Sending your message…';
+
+    try {
+      const response = await fetch('/api/contact', { method: 'POST', body: data });
+      const result = (await response.json()) as {
+        ok: boolean;
+        errors?: Record<string, string>;
+      };
+
+      if (result.ok) {
+        status.textContent = 'Your message has been sent. Thank you for reaching out.';
+        form.reset();
+      } else if (result.errors) {
+        for (const [field, message] of Object.entries(result.errors)) {
+          if (field === 'recaptcha' || field === 'form') {
+            status.textContent = message;
+          } else {
+            setError(field, message);
+          }
+        }
+      }
+    } catch {
+      status.textContent =
+        'Something went wrong sending your message. Please try again.';
+    }
+  });
+</script>
+
+<style>
+  .honeypot-field {
+    position: absolute;
+    left: -9999px;
+  }
+  .field {
+    margin-block-end: 1rem;
+  }
+  .field-error {
+    display: block;
+    color: #b00020;
+  }
+</style>
