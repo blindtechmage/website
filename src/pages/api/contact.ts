@@ -3,7 +3,7 @@ import { env } from 'cloudflare:workers';
 import { validateContactForm } from '../../lib/contact/validation';
 import { verifyRecaptcha } from '../../lib/contact/recaptcha';
 import { checkRateLimit } from '../../lib/contact/rateLimit';
-import { sendContactEmail } from '../../lib/contact/gmail';
+import { sendContactEmail } from '../../lib/contact/email';
 
 export const prerender = false;
 
@@ -59,11 +59,10 @@ export const POST: APIRoute = async ({ request, clientAddress }) => {
 
   try {
     await sendContactEmail(
+      env.EMAIL,
       {
-        clientId: env.GOOGLE_CLIENT_ID,
-        clientSecret: env.GOOGLE_CLIENT_SECRET,
-        refreshToken: env.GOOGLE_REFRESH_TOKEN,
-        sender: env.GMAIL_SENDER,
+        sender: env.CONTACT_SENDER,
+        recipient: env.CONTACT_RECIPIENT,
       },
       input
     );

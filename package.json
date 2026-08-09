@@ -19,7 +19,8 @@
   },
   "dependencies": {
     "@astrojs/cloudflare": "^13.7.0",
-    "astro": "^6.4.8"
+    "astro": "^6.4.8",
+    "mimetext": "^3.0.28"
   },
   "overrides": {
     "undici": "^8.10.0",

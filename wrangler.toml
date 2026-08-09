@@ -1,5 +1,18 @@
 name = "blindtechmage-website"
 compatibility_date = "2026-01-01"
+# mimetext (used to build the contact form's outbound MIME message) requires
+# the nodejs_compat flag.
+compatibility_flags = ["nodejs_compat"]
+
+# Contact form outbound email, via the classic Email Routing `send_email`
+# binding (legacy EmailMessage/mimetext API) rather than the newer Email
+# Sending product, which requires a Workers Paid plan this account does not
+# have. `destination_address` restricts the binding to a single, already
+# account-verified address, so no sending-domain SPF/DKIM onboarding is
+# needed. See docs/SECURITY.md.
+[[send_email]]
+name = "EMAIL"
+destination_address = "blindtechmage+jwauthier@gmail.com"
 
 # @astrojs/cloudflare (Workers-targeting, not classic Pages) generates a
 # complete, ready-to-deploy wrangler.json at dist/server/wrangler.json on
@@ -25,9 +38,11 @@ compatibility_date = "2026-01-01"
 # binding = "RATE_LIMIT"
 # id = "REPLACE_WITH_REAL_ID"
 
-# Contact form secrets (GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET,
-# GOOGLE_REFRESH_TOKEN, GMAIL_SENDER, RECAPTCHA_SECRET) are set via
-# `wrangler secret put <NAME>`, never committed here. See docs/SECURITY.md.
+# Contact form secrets (CONTACT_SENDER, CONTACT_RECIPIENT, RECAPTCHA_SECRET)
+# are set via `wrangler secret put <NAME>`, never committed here. Neither
+# CONTACT_SENDER nor CONTACT_RECIPIENT is sensitive by nature, but they are
+# kept as secrets rather than [vars] so they aren't committed to a public
+# repo. See docs/SECURITY.md.
 #
 # The reCAPTCHA site key (PUBLIC_RECAPTCHA_SITE_KEY) is not secret — it is a
 # build-time public environment variable, set via a `.env` file locally

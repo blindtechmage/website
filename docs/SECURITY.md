@@ -65,11 +65,14 @@ relying on a filter to exclude private rows.
   * Rate limiting via a Cloudflare KV-backed counter, keyed by client IP
     (`src/lib/contact/rateLimit.ts`), capped per time window.
 * Submitted data is not publicly queryable and is not exposed through any public
-  API route. Messages are relayed via the Gmail API (OAuth2, not raw SMTP —
-  Cloudflare Workers does not reliably support raw SMTP), using credentials
-  supplied by the primary contributor, stored as Cloudflare Worker secrets.
+  API route. Messages are relayed via Cloudflare's own Email Routing `send_email`
+  Worker binding (the legacy `EmailMessage`/`mimetext` API, not the newer Email
+  Sending product, which requires a Workers Paid plan this account does not
+  have). The binding is restricted to a single, account-verified destination
+  address (`destination_address` in `wrangler.toml`), so no third party (Google
+  or otherwise) is involved in delivery and no OAuth credentials are needed.
 * All four contact-form logic modules (validation, reCAPTCHA verification,
-  rate limiting, Gmail send) are pure/testable and have unit test coverage,
+  rate limiting, email send) are pure/testable and have unit test coverage,
   per the CI policy in `PROJECT.md`.
 
 ## Third-Party Services
@@ -88,12 +91,13 @@ relying on a filter to exclude private rows.
 
 ## Open Items
 
-* The contact form's KV namespace (`RATE_LIMIT`), Gmail API OAuth2
-  credentials, and reCAPTCHA site/secret key pair are not yet provisioned.
-  All three require manual setup outside this repository (Cloudflare KV
-  namespace creation; a Google Cloud project with Gmail API enabled and an
-  OAuth consent flow run once to obtain a refresh token; reCAPTCHA site
-  registration in Google's admin console) before the contact form is
-  functional in production. The code is written against these as named
-  bindings/secrets (see `wrangler.toml`, `src/env.d.ts`) and will fail
-  clearly, not silently, if they are unset.
+* The contact form's KV namespace (`RATE_LIMIT`) and reCAPTCHA site/secret
+  key pair are not yet provisioned. Both require manual setup outside this
+  repository (Cloudflare KV namespace creation; reCAPTCHA site registration
+  in Google's admin console) before the contact form is functional in
+  production. The `EMAIL` send binding and `CONTACT_SENDER`/
+  `CONTACT_RECIPIENT` secrets are configured in `wrangler.toml`, pointing at
+  an already-verified Email Routing destination address, so no further
+  manual provisioning is needed for email delivery itself. The code is
+  written against these as named bindings/secrets (see `wrangler.toml`,
+  `src/env.d.ts`) and will fail clearly, not silently, if they are unset.
