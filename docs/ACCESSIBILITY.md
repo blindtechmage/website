@@ -59,7 +59,8 @@ content/IA decision, not yet finalized — see `docs/PRD.md`, Open Items.
 ## Open Items
 
 - Whether any component will target AAA specifically, and which.
-- Full accessibility test checklist / acceptance-criteria template for feature
-  issues (each feature issue's acceptance criteria should include at least one
-  accessibility-focused scenario, per the lightweight issue tracking approach in
-  `PROJECT.md`).
+- Feature issues should draw their accessibility-focused acceptance criteria
+  from `docs/ACCESSIBILITY_CHECKLIST.md`, per the lightweight issue tracking
+  approach in `PROJECT.md`. The checklist itself still needs scripted/automated
+  coverage built out for its `(Script)`-tagged items (see that file's closing
+  notes).
