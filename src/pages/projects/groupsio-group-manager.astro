@@ -1,0 +1,99 @@
+---
+export const prerender = true;
+
+import BaseLayout from '../../layouts/BaseLayout.astro';
+---
+
+<BaseLayout title="GroupsIO Group Manager — Blind Tech Mage">
+  <main id="main-content">
+    <h1>GroupsIO Group Manager</h1>
+
+    <p>
+      A WordPress plugin built for
+      <abbr title="Blind Information Technology Solutions">BITS</abbr>, a
+      blindness-focused nonprofit and professional affiliate of the American
+      Council of the Blind. It keeps BITS&rsquo;s Groups.io mailing lists in
+      sync with actual paid membership, automatically, so no one has to
+      manage list access by hand.
+    </p>
+
+    <h2>The problem</h2>
+    <p>
+      BITS runs its member communication over Groups.io mailing lists and
+      manages paid membership through Paid Memberships Pro (PMPro) on
+      WordPress. Before this plugin existed, keeping the two in sync was a
+      manual job &mdash; someone had to notice when a membership lapsed or a
+      new member joined, and update Groups.io by hand. Miss it, and either a
+      lapsed member keeps member-only access, or a new member goes
+      unreached.
+    </p>
+
+    <h2>What it does</h2>
+    <ul>
+      <li>
+        When a membership begins or changes, the plugin reads the mailing
+        list selections already captured on the member&rsquo;s PMPro
+        profile and adds them to the corresponding BITS Groups.io lists
+        &mdash; both the lists every member must belong to, and any tied to
+        their specific membership level.
+      </li>
+      <li>
+        When a membership ends &mdash; expiration, cancellation, or account
+        deletion &mdash; the plugin automatically removes the member from
+        every BITS Groups.io list they were part of.
+      </li>
+      <li>
+        A nightly reconciliation job checks for drift between what PMPro
+        says a member&rsquo;s access should be and what Groups.io actually
+        reflects, and corrects any mismatch.
+      </li>
+      <li>
+        A passwordless &ldquo;magic link&rdquo; feature lets a member reach
+        their WordPress profile by email, without needing to recall a
+        password.
+      </li>
+    </ul>
+
+    <h2>How it&rsquo;s built</h2>
+    <p>
+      Membership-change events are picked up via PMPro&rsquo;s
+      <code>pmpro_after_all_membership_level_changes</code> hook and handed
+      off to a background job queue (Action Scheduler), so a member checking
+      out or an admin making a change is never blocked waiting on a
+      Groups.io API round trip. Every add and remove call is logged to a
+      dedicated audit table, with its own retention policy. The Groups.io
+      API client handles rate limiting (HTTP 429, honoring
+      <code>Retry-After</code> with jitter) and retries transient failures
+      with exponential backoff, and hard-stops all sync activity with an
+      admin alert if the API credential itself becomes invalid.
+    </p>
+    <p>
+      Because a single member can be registered under different email
+      addresses for different mailing lists, sync and removal logic
+      operates on (list, email) pairs rather than assuming one address
+      covers a member&rsquo;s entire subscription. The plugin also honors
+      Groups.io&rsquo;s own unsubscribe, bounce, and spam signals &mdash;
+      once flagged, a member is permanently excluded from future automatic
+      adds, in keeping with CAN-SPAM &mdash; and handles GDPR/CCPA
+      right-to-be-forgotten erasure with an immediate, no-grace-period
+      removal from every list.
+    </p>
+
+    <h2>Admin controls</h2>
+    <p>
+      Administrators work through a &ldquo;GroupsIO Management&rdquo; admin
+      menu with three pages: feature controls (mandatory lists, grace
+      period before removal, log retention, and an emergency kill switch),
+      subgroup management (creating, editing, and inspecting the Groups.io
+      subgroups themselves), and user assignment (a searchable member list
+      with per-member details and manual override tools for when
+      automation needs a human to step in).
+    </p>
+
+    <p>
+      <a href="https://github.com/TechClusiveSolutions/GroupsIO-group-manager" target="_blank" rel="noopener noreferrer">View the source on GitHub<span class="visually-hidden"> (opens in a new tab)</span></a>
+    </p>
+
+    <p><a href="/projects">Back to projects</a></p>
+  </main>
+</BaseLayout>

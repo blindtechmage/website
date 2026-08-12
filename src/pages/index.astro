@@ -17,31 +17,33 @@ import BaseLayout from '../layouts/BaseLayout.astro';
         A few years ago, blind users struggled just to figure out where a
         control lived on a page - top-left, buried in a sidebar, or three
         tab-stops past a broken landmark. JAWS 2026&rsquo;s
-        <a href="https://www.youtube.com/watch?v=0Di913vXLOw" target="_blank" rel="noopener noreferrer">Page Explorer<span class="visually-hidden"> (opens in a new tab)</span></a>,
+        <a href="/resources">Page Explorer</a>,
         paired with AI, can now describe an entire page&rsquo;s layout in detail,
         in seconds. That&rsquo;s not incremental improvement. That is the exact
         kind of threshold Clarke was talking about - things that were once impossible are suddenly ordinary.
     </p>
 
     <p>
-      It works because good code makes it possible. Page Explorer can only
-      describe a page well if it was actually built with real
-      structure underneath it - not div soup. That is the same reason
-      a single misplaced comma can break an entire application, and the
-      same reason a single design choice, like where a control sits on a
-      page, can make or break a user&rsquo;s ability to use it. Building
-      technology is not just about presentation. It is about experience.
+      When I started writing software in the early 2000s, IDEs had no real
+      concept of a screen reader. JAWS and NVDA weren&rsquo;t supported so
+      much as tolerated &mdash; you learned to work around your tools, not
+      with them. Twenty years later, VSCode ships an accessible view built
+      specifically for output like mine, no workaround required. That gap
+      didn&rsquo;t close on its own. It closed because a few engineers
+      followed simple rules &mdash; real structure, real landmarks, real
+      semantics &mdash; instead of bolting accessibility on after the fact.
+      You can see that same approach at work in my
+      <a href="/projects">projects</a>.
     </p>
 
     <p>
-      People often ask me: &ldquo;How can you code if you can&rsquo;t see
-      the computer?&rdquo; Everyone has limitations. The difference is what
-      we do with our abilities. I don&rsquo;t use a monitor and a mouse
-      - I use a keyboard and a screen reader. That&rsquo;s not a
-      limitation on what I can build. It&rsquo;s just a different
-      interface.
+      Page Explorer and VSCode&rsquo;s accessible view are both, at their
+      core, AI describing an interface to me. The next step is AI that
+      doesn&rsquo;t just describe an interface &mdash; it acts on one, and
+      coordinates with other AI to do it. That&rsquo;s the question behind
+      the research I&rsquo;m doing now: how agents behave, and misbehave,
+      when several of them have to work together. You can follow that work
+      on my <a href="/research">research page</a>.
     </p>
-
-    <p><a href="/contact">Get in touch</a></p>
   </main>
 </BaseLayout>
