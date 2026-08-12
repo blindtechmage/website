@@ -1,0 +1,25 @@
+---
+export const prerender = true;
+
+import BaseLayout from '../../layouts/BaseLayout.astro';
+---
+
+<BaseLayout title="Projects — Blind Tech Mage">
+  <main id="main-content">
+    <h1>Projects</h1>
+
+    <p>
+      A collection of the software I&rsquo;ve built &mdash; each one an
+      example of the same practice: real structure, real landmarks, real
+      semantics, not accessibility bolted on after the fact.
+    </p>
+
+    <ul>
+      <li>
+        <a href="/projects/groupsio-group-manager">GroupsIO Group Manager</a>
+        &mdash; a WordPress plugin that keeps a nonprofit&rsquo;s Groups.io
+        mailing lists in sync with paid membership status automatically.
+      </li>
+    </ul>
+  </main>
+</BaseLayout>
