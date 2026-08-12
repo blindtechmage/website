@@ -1,0 +1,49 @@
+---
+export const prerender = true;
+
+import BaseLayout from '../../layouts/BaseLayout.astro';
+---
+
+<BaseLayout title="Page Explorer — Blind Tech Mage">
+  <main id="main-content">
+    <h1>Page Explorer</h1>
+    <p>A JAWS 2026 feature, from Vispero</p>
+
+    <p>
+      A few years ago, figuring out where a control lived on a page meant
+      tabbing through it blind &mdash; top-left, buried in a sidebar, or
+      three tab-stops past a broken landmark, with no way to know the
+      shape of the page before you&rsquo;d already crawled most of it.
+      Page Explorer, paired with AI, changes that: it can describe an
+      entire page&rsquo;s layout in detail, in seconds, before you touch a
+      single control.
+    </p>
+
+    <h2>What it does</h2>
+    <p>
+      Instead of discovering a page one tab-stop at a time, Page Explorer
+      gives a screen reader user an upfront, AI-generated description of
+      how the page is actually laid out &mdash; what regions exist, where
+      the main content sits relative to navigation and sidebars, and what
+      controls are grouped together. It turns page orientation from a
+      slow, manual search into something closer to a glance.
+    </p>
+
+    <h2>Why it matters</h2>
+    <p>
+      Page Explorer can only describe a page well if that page was
+      actually built with real structure underneath it &mdash; real
+      landmarks, real semantics, not div soup. It&rsquo;s a direct,
+      practical payoff for the same engineering discipline behind
+      everything in my <a href="/projects">projects</a>: build it
+      correctly, and tools like this can do far more with it than anyone
+      writing the page by hand ever could on their own.
+    </p>
+
+    <p>
+      <a href="https://www.youtube.com/watch?v=0Di913vXLOw" target="_blank" rel="noopener noreferrer">Watch a demo of Page Explorer<span class="visually-hidden"> (opens in a new tab)</span></a>
+    </p>
+
+    <p><a href="/resources">Back to resources</a></p>
+  </main>
+</BaseLayout>
