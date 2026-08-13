@@ -4,6 +4,14 @@ compatibility_date = "2026-01-01"
 # the nodejs_compat flag.
 compatibility_flags = ["nodejs_compat"]
 
+# Required by @astrojs/cloudflare's built-in sessions feature (auto-injects
+# a SESSION KV binding regardless of whether this project uses sessions
+# directly). KV namespace IDs are not secret — see
+# https://developers.cloudflare.com/kv/concepts/kv-namespaces/.
+[[kv_namespaces]]
+binding = "SESSION"
+id = "cf7dafbef60049ea95d4982cbe2504f9"
+
 # Contact form outbound email, via the classic Email Routing `send_email`
 # binding (legacy EmailMessage/mimetext API) rather than the newer Email
 # Sending product, which requires a Workers Paid plan this account does not
