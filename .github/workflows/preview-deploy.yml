@@ -21,6 +21,8 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm run build
+        env:
+          PUBLIC_RECAPTCHA_SITE_KEY: ${{ vars.PUBLIC_RECAPTCHA_SITE_KEY }}
 
       # Uploads a new Worker version (not a full deploy — never touches the
       # production/Active deployment) with a preview alias tied to this PR
