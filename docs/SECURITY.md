@@ -89,15 +89,12 @@ relying on a filter to exclude private rows.
   at the point of choosing it, per the project conventions document, with a note to
   re-validate the choice when work in that area actually begins.
 
-## Open Items
+## Provisioning Status
 
-* The contact form's KV namespace (`RATE_LIMIT`) and reCAPTCHA site/secret
-  key pair are not yet provisioned. Both require manual setup outside this
-  repository (Cloudflare KV namespace creation; reCAPTCHA site registration
-  in Google's admin console) before the contact form is functional in
-  production. The `EMAIL` send binding and `CONTACT_SENDER`/
-  `CONTACT_RECIPIENT` secrets are configured in `wrangler.toml`, pointing at
-  an already-verified Email Routing destination address, so no further
-  manual provisioning is needed for email delivery itself. The code is
-  written against these as named bindings/secrets (see `wrangler.toml`,
-  `src/env.d.ts`) and will fail clearly, not silently, if they are unset.
+* The contact form's `RATE_LIMIT` and `SESSION` KV namespaces, the
+  `CONTACT_SENDER`/`CONTACT_RECIPIENT`/`RECAPTCHA_SECRET` Worker secrets,
+  and the reCAPTCHA site/secret key pair (registered in Google's admin
+  console) are all provisioned in production as of 2026-08-13. The `EMAIL`
+  send binding and `CONTACT_SENDER`/`CONTACT_RECIPIENT` secrets point at an
+  already-verified Email Routing destination address. The contact form is
+  fully functional in production.

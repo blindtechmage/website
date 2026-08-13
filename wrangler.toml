@@ -38,13 +38,10 @@ destination_address = "blindtechmage+jwauthier@gmail.com"
 # database_name = "blindtechmage-resources"
 # database_id = "REPLACE_WITH_REAL_ID"
 
-# Contact form rate limiting. Requires a real KV namespace, created via
-# `wrangler kv namespace create RATE_LIMIT` before this is active — not yet
-# provisioned.
-#
-# [[kv_namespaces]]
-# binding = "RATE_LIMIT"
-# id = "REPLACE_WITH_REAL_ID"
+# Contact form rate limiting.
+[[kv_namespaces]]
+binding = "RATE_LIMIT"
+id = "da26bfe7fe9a4154a77e4e290ada305e"
 
 # Contact form secrets (CONTACT_SENDER, CONTACT_RECIPIENT, RECAPTCHA_SECRET)
 # are set via `wrangler secret put <NAME>`, never committed here. Neither
