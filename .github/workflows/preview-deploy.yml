@@ -1,0 +1,66 @@
+name: Preview Deploy
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+    branches: [main]
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  preview-deploy:
+    name: Deploy Cloudflare Preview
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+
+      # Uploads a new Worker version (not a full deploy — never touches the
+      # production/Active deployment) with a preview alias tied to this PR
+      # number. The alias is stable across pushes to the same PR, so the
+      # posted URL never changes even as new commits land. Missing runtime
+      # secrets (e.g. RECAPTCHA_SECRET) don't block this step — Workers
+      # secrets are resolved at request time, not at version-upload time —
+      # so routes that don't depend on them (every page but the contact
+      # form's POST handler) preview correctly regardless.
+      - name: Upload preview version
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_KEY }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          set -euo pipefail
+          npx wrangler versions upload \
+            --config dist/server/wrangler.json \
+            --preview-alias "pr-${{ github.event.number }}" \
+            | tee wrangler-preview.log
+
+          PREVIEW_URL=$(grep -oE 'https://[a-zA-Z0-9.-]*\.workers\.dev' wrangler-preview.log | head -n1)
+          if [ -z "$PREVIEW_URL" ]; then
+            echo "Could not find a preview URL in wrangler's output." >&2
+            exit 1
+          fi
+          echo "PREVIEW_URL=$PREVIEW_URL" >> "$GITHUB_ENV"
+
+      - name: Post or update preview URL comment
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          MARKER="<!-- cloudflare-preview-url -->"
+          BODY="$(printf '%s\n🔍 **Preview deployment:** %s' "$MARKER" "$PREVIEW_URL")"
+
+          EXISTING_ID=$(gh api "repos/${{ github.repository }}/issues/${{ github.event.number }}/comments" --paginate \
+            --jq ".[] | select(.body | startswith(\"$MARKER\")) | .id" | head -n1)
+
+          if [ -n "$EXISTING_ID" ]; then
+            gh api -X PATCH "repos/${{ github.repository }}/issues/comments/$EXISTING_ID" -f body="$BODY"
+          else
+            gh api -X POST "repos/${{ github.repository }}/issues/${{ github.event.number }}/comments" -f body="$BODY"
+          fi
